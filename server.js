@@ -49,32 +49,40 @@ app.post('/login/:name/:pass', (req, res) => {
 // Add this item to the global array I initiated
 app.post('/addItem/:item', (req, res) => {
    var item = req.params.item;
-   myArray.push(item);
-   console.log(myArray);
+   var location = myArray.indexOf(item);
+
+   // if the item is not already in the array, add it to array
+   if(location == -1) {
+        myArray.push(item);
+        console.log(myArray);
   // res.json(myArray);
-   res.json('You have added ' + item + ' to the array!');
+        res.json('You have added ' + item + ' to the array!');
+   } else {
+       // status 409 --> conflict
+       res.status(409).json({message: `${item} already exists in the array`});
+   }
 });
 
+// create a DELETE request that has an item attribute
+// remove this item from the array, if present
 app.delete('/deleteItem/:item', (req, res) => {
    var item = req.params.item;
    
    var location = myArray.indexOf(item);
    console.log(location);
    
+   // if item is there, delete it from array
    if (location != -1) {
-       myArray.splice(location);
-       res.json('The item ' + item + ' is there');
+       myArray.splice(location, 1);
+       res.json(myArray);
+       
    } else {
-       res.json('The item is not present');
+       // status 412 --> precondition failed
+       res.status(412).json('The item you want to delete is not present');
    }
    
     
 });
-
-// use indexOf() to see if the array has a certain element 
-// use splice to delete the item if it is present 
-
-
 
 
 
